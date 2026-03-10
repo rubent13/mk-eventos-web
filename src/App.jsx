@@ -363,7 +363,7 @@ function HomePage() {
           <div className="flex justify-between items-center h-20">
             {/* Logo y Nombre */}
             <div className="flex items-center gap-2 md:gap-3 cursor-pointer" onClick={() => {setCurrentView('home'); window.scrollTo(0,0); setIsMobileMenuOpen(false);}}>
-              <MKLogo className="w-10 h-10 md:w-12 md:h-12" />
+              <img src="/Logo Sin fondo En blanco.png" alt="Logo" className="w-10 h-10 md:w-16 md:h-16" />
               <div className="flex flex-col">
                 <span className="text-xl md:text-2xl font-black tracking-tighter leading-none text-white">
                   MEDICAL <span className="text-cyan-500">KNOWLEDGE</span>
@@ -798,7 +798,7 @@ function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center text-center md:text-left">
               <div className="flex flex-col items-center md:items-start">
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-                  <MKLogo className="w-8 h-8" />
+                  <img src="/Logo sin fondo.png" alt="Logo" className="w-28 h-28" />
                   <span className="text-slate-900 font-black tracking-tighter text-xl">MK EVENTOS</span>
                 </div>
                 <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6 uppercase tracking-tight">
@@ -825,10 +825,9 @@ function HomePage() {
                 </div>
               </div>
               <div className="relative flex items-center justify-center">
-                <img 
-                  src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1000" 
+                <img src="/Logo sin fondo.png" 
                   alt="Conferencia Médica" 
-                  className="w-full rounded shadow-xl border border-slate-200 object-cover"
+                  className="w-full"
                 />
               </div>
             </div>
@@ -844,7 +843,7 @@ function HomePage() {
             
             <div className="md:col-span-1 flex flex-col items-center md:items-start">
               <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-                <MKLogo className="w-8 h-8 opacity-90" />
+                <img src="/Logo Sin fondo En blanco.png" alt="Logo" className="w-20 h-20 opacity-90" />
                 <span className="text-xl font-black text-white tracking-tighter">
                   MEDICAL KNOWLEDGE
                 </span>
