@@ -1211,12 +1211,12 @@ function HomePage() {
 
       {/* --- MODAL POP-UP PUBLICITARIO --- */}
       {showPopup && popupAds.length > 0 && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-8">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-2 sm:p-4 md:p-8">
           {/* Fondo oscuro desenfocado */}
           <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity" onClick={() => setShowPopup(false)}></div>
           
-          {/* Caja del Pop-up - Ahora se adapta al contenido dinámicamente */}
-          <div className="relative z-10 w-full max-w-[95vw] md:max-w-2xl lg:max-w-4xl animate-in zoom-in-95 duration-300 flex flex-col items-center justify-center">
+          {/* Caja del Pop-up - Ahora se adapta al contenido dinámicamente y añade scroll si es necesario */}
+          <div className="relative z-10 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-auto animate-in zoom-in-95 duration-300 flex flex-col items-center justify-center">
 
             {/* Botón Cerrar Flotante (Por fuera para que no tape el diseño) */}
             <button 
@@ -1234,8 +1234,8 @@ function HomePage() {
                     <img 
                       src={formatImageUrl(popupAds[0].imageUrl)} 
                       alt="Anuncio Especial" 
-                      // object-contain evita que se corte. max-h-[80vh] previene desbordamiento vertical.
-                      className="w-full h-auto max-h-[75vh] md:max-h-[85vh] object-contain mx-auto rounded-xl shadow-2xl"
+                      // object-contain evita que se corte. max-h limita la altura en vistas pequeñas para no desbordar.
+                      className="w-full h-auto max-h-[60vh] sm:max-h-[70vh] md:max-h-[85vh] object-contain mx-auto rounded-xl shadow-2xl"
                       onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://placehold.co/800x600/e2e8f0/64748b?text=Imagen+No+Disponible'; }}
                     />
                   </a>
@@ -1254,7 +1254,7 @@ function HomePage() {
                 </div>
               ) : (
                 // Si solo usaste los colores y texto del sistema (sin imagen)
-                <div className="w-full p-8 md:p-12 text-center flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px] rounded-2xl shadow-2xl" style={{ backgroundColor: popupAds[0].bgColor || '#0f172a' }}>
+                <div className="w-full p-6 sm:p-8 md:p-12 text-center flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px] max-h-[80vh] overflow-auto rounded-2xl shadow-2xl" style={{ backgroundColor: popupAds[0].bgColor || '#0f172a' }}>
                   <h3 className="text-2xl md:text-4xl font-black mb-6 md:mb-8 uppercase tracking-tight leading-tight" style={{ color: popupAds[0].textColor || '#ffffff' }}>
                     {popupAds[0].title}
                   </h3>
