@@ -89,21 +89,21 @@ const PODCAST_EPISODES = [
     title: "Tribuna médica 💙⚕️ (Ep1) Adicción a pantallas⚕️", 
     duration: "15:17", 
     url: "https://www.youtube.com/embed/6mxvjDqwsT0?si=WTE7WqJTgMn_n03M", 
-    thumbnail: "https://i.ytimg.com/an_webp/6mxvjDqwsT0/mqdefault_6s.webp?du=3000&sqp=CPOPwc0G&rs=AOn4CLBPfCi81nXfq_Bx_DoPlrw4aznfZw" 
+    thumbnail: "https://i.ytimg.com/an_webp/6mxvjDqwsT0/mqdefault_6s.webp?du=3000&sqp=CITCw80G&rs=AOn4CLC_r18ryWDelW8FOqlH2BiRVuDVWw" 
   },
   { 
     id: "ep2", 
     title: "Tribuna médica 💙⚕️ (Ep1) Adicción a pantallas⚕️", 
     duration: "15:17", 
     url: "https://www.youtube.com/embed/6mxvjDqwsT0?si=WTE7WqJTgMn_n03M", 
-    thumbnail: "https://i.ytimg.com/an_webp/6mxvjDqwsT0/mqdefault_6s.webp?du=3000&sqp=CPOPwc0G&rs=AOn4CLBPfCi81nXfq_Bx_DoPlrw4aznfZw" 
+    thumbnail: "https://i.ytimg.com/an_webp/6mxvjDqwsT0/mqdefault_6s.webp?du=3000&sqp=CITCw80G&rs=AOn4CLC_r18ryWDelW8FOqlH2BiRVuDVWw" 
   },
   { 
     id: "ep3", 
     title: "Tribuna médica 💙⚕️ (Ep2) Primeros auxilios ⛑️", 
     duration: "6:57", 
     url: "https://www.youtube.com/embed/s_uaV8ZaPhA?si=DxGRFV-wWTrpbmFg", 
-    thumbnail: "https://i.ytimg.com/an_webp/s_uaV8ZaPhA/mqdefault_6s.webp?du=3000&sqp=CLDUwc0G&rs=AOn4CLAmOY0fy8yh1em7RTdeFe86UDORVQ" 
+    thumbnail: "https://i.ytimg.com/an_webp/s_uaV8ZaPhA/mqdefault_6s.webp?du=3000&sqp=CLDnw80G&rs=AOn4CLARr46dA8dCXdf5vgMymSCZey2dpA" 
   },
   { 
     id: "ep4", 
@@ -112,6 +112,22 @@ const PODCAST_EPISODES = [
     url: "https://www.youtube.com/embed/VD3q0JBC3QU?si=ZeHSyn_RUFXDTkc4", 
     thumbnail: "https://i.ytimg.com/vi/VD3q0JBC3QU/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AHOBYACgAqKAgwIABABGFogWShlMA8=&rs=AOn4CLDtCQcYVXc-330lzPibT5aCz9Y4wA" 
   }
+];
+
+// --- LISTAS PARA FILTROS DE BÚSQUEDA ---
+const VENEZUELAN_CITIES = [
+  "Acarigua", "Anaco", "Barcelona", "Barinas", "Barquisimeto",
+  "Cabimas", "Caracas", "Carúpano", "Ciudad Bolívar", "Ciudad Guayana",
+  "Ciudad Ojeda", "Coro", "Cumaná", "El Tigre", "Guarenas",
+  "Guatire", "La Victoria", "Los Teques", "Maracaibo", "Maracay",
+  "Maturín", "Mérida", "Ocumare del Tuy", "Punto Fijo",
+  "San Cristóbal", "San Fernando de Apure", "San Juan de los Morros",
+  "Valencia", "Valera", "Valle de la Pascua"
+];
+
+const MONTHS = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
 // --- COMPONENTES ADICIONALES ---
@@ -293,21 +309,24 @@ function HomePage() {
   const nextSlide = () => setActiveSlide((prev) => (prev === slidesBD.length - 1 ? 0 : prev + 1));
   const prevSlide = () => setActiveSlide((prev) => (prev === 0 ? slidesBD.length - 1 : prev - 1));
 
-  // -----------------------------------------------------------
-
   const [currentView, setCurrentView] = useState('home');
   const [categoryFilter, setCategoryFilter] = useState('Todos');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  
+
+  // RESTAURADO: Estado formData que faltaba
   const [formData, setFormData] = useState({
     nombre: '', apellido: '', telefono: '', correo: '', profesion: ''
   });
+  
+  // --- NUEVOS ESTADOS PARA BÚSQUEDA AVANZADA ---
+  const [searchForm, setSearchForm] = useState({ query: '', month: '', city: '' });
+  const [activeSearch, setActiveSearch] = useState({ query: '', month: '', city: '' });
 
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
-    const phone = "584124568823";
+    const phone = "584221590023";
     const text = `Hola, quiero adquirir entradas para *${selectedEvent.title}*.\n\nMis datos:\n*Nombre:* ${formData.nombre} ${formData.apellido}\n*Teléfono:* ${formData.telefono}\n*Correo:* ${formData.correo}\n*Profesión:* ${formData.profesion}`;
     
     const encodedText = encodeURIComponent(text);
@@ -330,9 +349,72 @@ function HomePage() {
     }, 100);
   };
 
-  const filteredEvents = categoryFilter === 'Todos' 
-    ? eventosBD 
-    : eventosBD.filter(e => e.category === categoryFilter);
+  const handleSearchSubmit = () => {
+    setCurrentView('home');
+    setActiveSearch(searchForm); // Aplicamos los filtros activos solo al darle "Buscar"
+    setTimeout(() => {
+      document.getElementById('eventos')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  // --- LÓGICA DE FILTRADO EN TIEMPO REAL (Categoría + Búsqueda) ---
+  let filteredEvents = eventosBD;
+
+  // 1. Filtro por botones de categoría superior
+  if (categoryFilter !== 'Todos') {
+    filteredEvents = filteredEvents.filter(e => e.category === categoryFilter);
+  }
+
+  // 2. Filtro por barra de texto (título, descripción o categoría)
+  if (activeSearch.query) {
+    const q = activeSearch.query.toLowerCase();
+    filteredEvents = filteredEvents.filter(e =>
+      (e.title && e.title.toLowerCase().includes(q)) ||
+      (e.description && e.description.toLowerCase().includes(q)) ||
+      (e.category && e.category.toLowerCase().includes(q))
+    );
+  }
+
+   // 3. Filtro por selector de mes
+  if (activeSearch.month) {
+    const selectedMonth = activeSearch.month.toLowerCase();
+    
+    // Diccionario avanzado para reconocer CUALQUIER formato de fecha que escribas en el admin
+    const monthAliases = {
+      "enero": ["enero", "ene", "/01", "-01", ".01"],
+      "febrero": ["febrero", "feb", "/02", "-02", ".02"],
+      "marzo": ["marzo", " mar ", " mar,", "mar.", "/03", "-03", ".03"], // Espacios previenen cruces con 'martes'
+      "abril": ["abril", "abr", "/04", "-04", ".04"],
+      "mayo": ["mayo", " may ", " may,", "may.", "/05", "-05", ".05"],
+      "junio": ["junio", "jun", "/06", "-06", ".06"],
+      "julio": ["julio", "jul", "/07", "-07", ".07"],
+      "agosto": ["agosto", "ago", "/08", "-08", ".08"],
+      "septiembre": ["septiembre", "sep", "sept", "/09", "-09", ".09"],
+      "octubre": ["octubre", "oct", "/10", "-10", ".10"],
+      "noviembre": ["noviembre", "nov", "/11", "-11", ".11"],
+      "diciembre": ["diciembre", "dic", "/12", "-12", ".12"]
+    };
+
+    const aliases = monthAliases[selectedMonth] || [selectedMonth];
+
+    filteredEvents = filteredEvents.filter(e => {
+      // Agregamos espacios al inicio y final de la fecha para que la coincidencia sea exacta
+      const dateStr = ` ${(e.dateFull || '').toLowerCase()} `; 
+      const autoMonth = (e.month || '').toLowerCase();
+      
+      // Verifica si alguno de los formatos/alias del mes está escrito dentro de la fecha del evento
+      return aliases.some(alias => dateStr.includes(alias)) || autoMonth === selectedMonth.substring(0, 3);
+    });
+  }
+
+  // 4. Filtro por selector de ciudad
+  if (activeSearch.city) {
+    const c = activeSearch.city.toLowerCase();
+    filteredEvents = filteredEvents.filter(e => {
+      if (!e.location) return false;
+      return e.location.toLowerCase().includes(c);
+    });
+  }
 
   const displaySlides = slidesBD.length > 0 ? slidesBD : [{
     id: 'default',
@@ -495,28 +577,43 @@ function HomePage() {
               <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl md:shadow-2xl p-3 flex flex-col md:flex-row gap-3 border border-slate-200/60 md:backdrop-blur-xl">
                 <div className="flex-1 relative flex items-center bg-slate-50 md:bg-transparent rounded-xl md:rounded-none">
                   <Search className="absolute left-4 text-cyan-600" size={20} />
-                  <input type="text" placeholder="Buscar eventos, cursos..." className="w-full pl-12 pr-4 py-3.5 bg-transparent rounded-xl text-slate-700 outline-none focus:bg-slate-100 md:focus:bg-slate-50 transition-all font-semibold placeholder:font-medium placeholder:text-slate-400" />
+                  <input 
+                    type="text" 
+                    placeholder="Buscar eventos, cursos..." 
+                    className="w-full pl-12 pr-4 py-3.5 bg-transparent rounded-xl text-slate-700 outline-none focus:bg-slate-100 md:focus:bg-slate-50 transition-all font-semibold placeholder:font-medium placeholder:text-slate-400" 
+                    value={searchForm.query}
+                    onChange={(e) => setSearchForm({...searchForm, query: e.target.value})}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
+                  />
                 </div>
                 <div className="hidden md:block w-px bg-slate-200 my-2"></div>
                 <div className="w-full md:w-1/4 relative flex items-center bg-slate-50 md:bg-transparent rounded-xl md:rounded-none">
                   <Calendar className="absolute left-4 text-cyan-600" size={20} />
-                  <select className="w-full pl-12 pr-4 py-3.5 bg-transparent rounded-xl text-slate-700 outline-none focus:bg-slate-100 md:focus:bg-slate-50 cursor-pointer font-semibold appearance-none">
-                    <option value="">Fechas</option>
-                    <option value="este-mes">Este mes</option>
-                    <option value="proximo-mes">Próximo mes</option>
+                  <select 
+                    className="w-full pl-12 pr-4 py-3.5 bg-transparent rounded-xl text-slate-700 outline-none focus:bg-slate-100 md:focus:bg-slate-50 cursor-pointer font-semibold appearance-none"
+                    value={searchForm.month}
+                    onChange={(e) => setSearchForm({...searchForm, month: e.target.value})}
+                  >
+                    <option value="">Todos los meses</option>
+                    {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
                   </select>
                 </div>
                 <div className="hidden md:block w-px bg-slate-200 my-2"></div>
                 <div className="w-full md:w-1/4 relative flex items-center bg-slate-50 md:bg-transparent rounded-xl md:rounded-none">
                   <MapPin className="absolute left-4 text-cyan-600" size={20} />
-                  <select className="w-full pl-12 pr-4 py-3.5 bg-transparent rounded-xl text-slate-700 outline-none focus:bg-slate-100 md:focus:bg-slate-50 cursor-pointer font-semibold appearance-none">
-                    <option value="">Ciudad</option>
-                    <option value="caracas">Caracas</option>
-                    <option value="maracay">Maracay</option>
-                    <option value="valencia">Valencia</option>
+                  <select 
+                    className="w-full pl-12 pr-4 py-3.5 bg-transparent rounded-xl text-slate-700 outline-none focus:bg-slate-100 md:focus:bg-slate-50 cursor-pointer font-semibold appearance-none"
+                    value={searchForm.city}
+                    onChange={(e) => setSearchForm({...searchForm, city: e.target.value})}
+                  >
+                    <option value="">Toda Venezuela</option>
+                    {VENEZUELAN_CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
-                <button className="bg-[#0f172a] hover:bg-cyan-600 text-white px-8 py-3.5 rounded-xl font-bold transition-colors w-full md:w-auto uppercase tracking-wide text-sm mt-2 md:mt-0 shadow-md md:shadow-none">
+                <button 
+                  onClick={handleSearchSubmit}
+                  className="bg-[#0f172a] hover:bg-cyan-600 text-white px-8 py-3.5 rounded-xl font-bold transition-colors w-full md:w-auto uppercase tracking-wide text-sm mt-2 md:mt-0 shadow-md md:shadow-none"
+                >
                   Buscar
                 </button>
               </div>
@@ -548,9 +645,25 @@ function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredEvents.length === 0 && (
               <div className="col-span-full text-center py-12 bg-white rounded-xl border border-slate-200 border-dashed flex flex-col items-center justify-center">
-                 <Calendar className="mx-auto h-12 w-12 text-slate-300 mb-3" />
-                 <h3 className="text-lg font-bold text-slate-600">Próximamente Nuevos Eventos</h3>
-                 <p className="text-slate-400 text-sm">Mantente atento a las actualizaciones de nuestra cartelera médica.</p>
+                 <Search className="mx-auto h-12 w-12 text-slate-300 mb-3" />
+                 <h3 className="text-lg font-bold text-slate-600">No se encontraron eventos</h3>
+                 <p className="text-slate-400 text-sm">
+                   {(activeSearch.query || activeSearch.month || activeSearch.city || categoryFilter !== 'Todos') 
+                     ? "Prueba eliminando algunos filtros de búsqueda para ver más resultados." 
+                     : "Mantente atento a las actualizaciones de nuestra cartelera médica."}
+                 </p>
+                 {(activeSearch.query || activeSearch.month || activeSearch.city || categoryFilter !== 'Todos') && (
+                   <button 
+                     onClick={() => {
+                       setCategoryFilter('Todos');
+                       setSearchForm({ query: '', month: '', city: '' });
+                       setActiveSearch({ query: '', month: '', city: '' });
+                     }}
+                     className="mt-5 px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors text-sm"
+                   >
+                     Limpiar Filtros
+                   </button>
+                 )}
               </div>
             )}
 
@@ -562,6 +675,7 @@ function HomePage() {
                     src={formatImageUrl(event.image) || 'https://images.unsplash.com/photo-1576091160550-2173ff9e5ee5?auto=format&fit=crop&q=80&w=800'} 
                     alt={event.title} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://placehold.co/400x300/e2e8f0/64748b?text=Enlace+Invalido'; }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   
@@ -792,7 +906,7 @@ function HomePage() {
           </div>
         </section>
 
-        {/* --- SECCIÓN NOSOTROS --- */}
+       {/* --- SECCIÓN NOSOTROS --- */}
         <section id="nosotros" className="py-20 bg-slate-100 border-t border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center text-center md:text-left">
@@ -852,12 +966,9 @@ function HomePage() {
                 Tu portal de confianza para entradas a eventos, congresos y cursos en el sector salud.
               </p>
               <div className="flex gap-3 justify-center md:justify-start">
-                <button className="w-8 h-8 rounded bg-slate-800 flex items-center justify-center text-white hover:bg-cyan-500 transition-colors">
+<a href="https://www.instagram.com/mediiknowledge?igsh=d2hjdmJ1dXRhcXY4" target="_blank" rel="noreferrer" className="w-8 h-8 rounded bg-slate-800 flex items-center justify-center text-white hover:bg-cyan-500 transition-colors">
                   <Instagram size={16} />
-                </button>
-                <button className="w-8 h-8 rounded bg-slate-800 flex items-center justify-center text-white hover:bg-cyan-500 transition-colors">
-                  <Facebook size={16} />
-                </button>
+                </a>
               </div>
             </div>
             
@@ -874,10 +985,10 @@ function HomePage() {
             <div className="flex flex-col items-center md:items-start">
               <h4 className="text-white font-bold mb-4 uppercase text-xs tracking-wider">Soporte</h4>
               <ul className="space-y-2 text-sm text-center md:text-left">
-                <li><a href="https://wa.me/584124568823?text=Hola,%20necesito%20atenci%C3%B3n%20al%20cliente" target="_blank" rel="noreferrer" className="hover:text-cyan-400 transition-colors">Atención al Cliente</a></li>
+                <li><a href="https://wa.me/584221590023?text=Hola,%20necesito%20atenci%C3%B3n%20al%20cliente" target="_blank" rel="noreferrer" className="hover:text-cyan-400 transition-colors">Atención al Cliente</a></li>
                 <li><button onClick={() => setShowPaymentModal(true)} className="hover:text-cyan-400 transition-colors">Métodos de Pago</button></li>
                 <li><button onClick={() => {setCurrentView('faq'); window.scrollTo(0,0);}} className="hover:text-cyan-400 transition-colors">Preguntas Frecuentes</button></li>
-                <li><a href="mailto:validaciones@medicalknowledge.com?subject=Validaci%C3%B3n%20de%20Certificados" className="hover:text-cyan-400 transition-colors">Validar Certificados</a></li>
+                <li><a href="mailto:medicalknowledgevzla@gmail.com?subject=Validaci%C3%B3n%20de%20Certificados" className="hover:text-cyan-400 transition-colors">Validar Certificados</a></li>
               </ul>
             </div>
 
@@ -901,11 +1012,11 @@ function HomePage() {
                 </li>
                 <li className="flex items-center justify-center md:justify-start gap-2">
                   <Phone size={16} className="text-cyan-500 shrink-0" />
-                  <span>+58 412 4568823</span>
+                  <span>+58 422 1590023</span>
                 </li>
                 <li className="flex items-center justify-center md:justify-start gap-2">
                   <Mail size={16} className="text-cyan-500 shrink-0" />
-                  <span>info@medicalknowledge.com</span>
+                  <span>medicalknowledgevzla@gmail.com</span>
                 </li>
               </ul>
             </div>
@@ -1045,7 +1156,7 @@ function HomePage() {
                   <input 
                     type="tel" name="telefono" required value={formData.telefono} onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
-                    placeholder="+58 412 0000000"
+                    placeholder="+58 422 1590023"
                   />
                 </div>
 
@@ -1084,16 +1195,16 @@ function HomePage() {
             <p className="text-slate-500 text-sm mb-6">Selecciona una opción para ver las instrucciones (vía WhatsApp).</p>
             
             <div className="grid grid-cols-1 gap-3 w-full">
-              <a href="https://wa.me/584124568823?text=Hola,%20deseo%20pagar%20con%20Zelle" target="_blank" rel="noreferrer" className="flex items-center justify-center md:justify-start gap-4 p-4 rounded border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold transition-all hover:scale-105">
+              <a href="https://wa.me/584221590023?text=Hola,%20deseo%20pagar%20con%20Zelle" target="_blank" rel="noreferrer" className="flex items-center justify-center md:justify-start gap-4 p-4 rounded border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold transition-all hover:scale-105">
                 <Smartphone size={24} /> Zelle
               </a>
-              <a href="https://wa.me/584124568823?text=Hola,%20deseo%20pagar%20con%20Binance%20Pay" target="_blank" rel="noreferrer" className="flex items-center justify-center md:justify-start gap-4 p-4 rounded border border-yellow-300 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 font-bold transition-all hover:scale-105">
+              <a href="https://wa.me/584221590023?text=Hola,%20deseo%20pagar%20con%20Binance%20Pay" target="_blank" rel="noreferrer" className="flex items-center justify-center md:justify-start gap-4 p-4 rounded border border-yellow-300 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 font-bold transition-all hover:scale-105">
                 <CreditCard size={24} /> Binance Pay
               </a>
-              <a href="https://wa.me/584124568823?text=Hola,%20deseo%20pagar%20con%20Pago%20Móvil" target="_blank" rel="noreferrer" className="flex items-center justify-center md:justify-start gap-4 p-4 rounded border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-900 font-bold transition-all hover:scale-105">
+              <a href="https://wa.me/584221590023?text=Hola,%20deseo%20pagar%20con%20Pago%20Móvil" target="_blank" rel="noreferrer" className="flex items-center justify-center md:justify-start gap-4 p-4 rounded border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-900 font-bold transition-all hover:scale-105">
                 <Smartphone size={24} /> Pago Móvil
               </a>
-              <a href="https://wa.me/584124568823?text=Hola,%20deseo%20pagar%20con%20Transferencia%20Bancaria" target="_blank" rel="noreferrer" className="flex items-center justify-center md:justify-start gap-4 p-4 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-900 font-bold transition-all hover:scale-105">
+              <a href="https://wa.me/584221590023?text=Hola,%20deseo%20pagar%20con%20Transferencia%20Bancaria" target="_blank" rel="noreferrer" className="flex items-center justify-center md:justify-start gap-4 p-4 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-900 font-bold transition-all hover:scale-105">
                 <Landmark size={24} /> Transferencia Bancaria
               </a>
             </div>
