@@ -89,28 +89,28 @@ const PODCAST_EPISODES = [
     title: "Tribuna médica 💙⚕️ (Ep1) Adicción a pantallas⚕️", 
     duration: "15:17", 
     url: "https://www.youtube.com/embed/6mxvjDqwsT0?si=WTE7WqJTgMn_n03M", 
-    thumbnail: "https://i.ytimg.com/an_webp/6mxvjDqwsT0/mqdefault_6s.webp?du=3000&sqp=CITCw80G&rs=AOn4CLC_r18ryWDelW8FOqlH2BiRVuDVWw" 
+    thumbnail: "https://img.youtube.com/vi/6mxvjDqwsT0/hqdefault.jpg" 
   },
   { 
     id: "ep2", 
     title: "Tribuna médica 💙⚕️ (Ep1) Adicción a pantallas⚕️", 
     duration: "15:17", 
     url: "https://www.youtube.com/embed/6mxvjDqwsT0?si=WTE7WqJTgMn_n03M", 
-    thumbnail: "https://i.ytimg.com/an_webp/6mxvjDqwsT0/mqdefault_6s.webp?du=3000&sqp=CITCw80G&rs=AOn4CLC_r18ryWDelW8FOqlH2BiRVuDVWw" 
+    thumbnail: "https://img.youtube.com/vi/6mxvjDqwsT0/hqdefault.jpg" 
   },
   { 
     id: "ep3", 
     title: "Tribuna médica 💙⚕️ (Ep2) Primeros auxilios ⛑️", 
     duration: "6:57", 
     url: "https://www.youtube.com/embed/s_uaV8ZaPhA?si=DxGRFV-wWTrpbmFg", 
-    thumbnail: "https://i.ytimg.com/an_webp/s_uaV8ZaPhA/mqdefault_6s.webp?du=3000&sqp=CLDnw80G&rs=AOn4CLARr46dA8dCXdf5vgMymSCZey2dpA" 
+    thumbnail: "https://img.youtube.com/vi/s_uaV8ZaPhA/hqdefault.jpg" 
   },
   { 
     id: "ep4", 
     title: "Tribuna médica 💙⚕️ (Ep3) inhibidores de la fosfodiesterasa tipo 5 (PDE5)", 
     duration: "12:35", 
     url: "https://www.youtube.com/embed/VD3q0JBC3QU?si=ZeHSyn_RUFXDTkc4", 
-    thumbnail: "https://i.ytimg.com/vi/VD3q0JBC3QU/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AHOBYACgAqKAgwIABABGFogWShlMA8=&rs=AOn4CLDtCQcYVXc-330lzPibT5aCz9Y4wA" 
+    thumbnail: "https://img.youtube.com/vi/VD3q0JBC3QU/hqdefault.jpg" 
   }
 ];
 
@@ -472,10 +472,6 @@ function HomePage() {
               </div>
               
               <div className="flex items-center gap-4 border-l border-slate-700 pl-6">
-                <button className="bg-transparent border-2 border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-white px-5 py-2 rounded font-bold text-sm transition-all flex items-center gap-2">
-                  <Ticket size={16} />
-                  Mi Cuenta
-                </button>
               </div>
             </div>
           </div>
