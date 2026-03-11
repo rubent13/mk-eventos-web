@@ -297,7 +297,7 @@ function HomePage() {
   useEffect(() => {
     // Si hay algún pop-up activo en la base de datos, lo mostramos 2 segundos después de entrar
     if (popupAds.length > 0) {
-      const timer = setTimeout(() => setShowPopup(true), 2000);
+      const timer = setTimeout(() => setShowPopup(true), 1000);
       return () => clearTimeout(timer);
     }
   }, [popupAds.length]);
@@ -1211,61 +1211,74 @@ function HomePage() {
 
       {/* --- MODAL POP-UP PUBLICITARIO --- */}
       {showPopup && popupAds.length > 0 && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-2 sm:p-4 md:p-8">
-          {/* Fondo oscuro desenfocado */}
-          <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity" onClick={() => setShowPopup(false)}></div>
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-8">
           
-          {/* Caja del Pop-up - Ahora se adapta al contenido dinámicamente y añade scroll si es necesario */}
-          <div className="relative z-10 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-auto animate-in zoom-in-95 duration-300 flex flex-col items-center justify-center">
+          {/* Estilos para la animación de entrada rebotante (Spring) */}
+          <style>
+            {`
+              @keyframes popupSpring {
+                0% { opacity: 0; transform: scale(0.7) translateY(40px); }
+                60% { opacity: 1; transform: scale(1.02) translateY(-10px); }
+                100% { opacity: 1; transform: scale(1) translateY(0); }
+              }
+              .animate-popup-spring {
+                animation: popupSpring 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+              }
+            `}
+          </style>
 
-            {/* Botón Cerrar Flotante (Por fuera para que no tape el diseño) */}
-            <button 
-              onClick={() => setShowPopup(false)}
-              className="absolute -top-4 -right-2 md:-top-5 md:-right-5 z-20 bg-slate-800 hover:bg-slate-700 text-white p-2 md:p-3 rounded-full shadow-xl border-2 border-slate-600 transition-colors"
-            >
-              <X size={20} />
-            </button>
+          {/* Fondo oscuro desenfocado */}
+          <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md transition-opacity" onClick={() => setShowPopup(false)}></div>
+          
+          {/* Botón Cerrar Global (Fijo para que SIEMPRE sea visible y no tape la imagen) */}
+          <button 
+            onClick={() => setShowPopup(false)}
+            className="fixed top-4 right-4 md:top-8 md:right-8 z-[130] bg-white/10 hover:bg-white/20 text-white p-3 rounded-full backdrop-blur-lg shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-white/20 transition-all hover:scale-110 hover:rotate-90 flex items-center justify-center cursor-pointer"
+          >
+            <X size={24} />
+          </button>
 
-            <div className="w-full flex flex-col items-center">
-              {popupAds[0].imageUrl ? (
-                // Si subiste una imagen/diseño propio
-                <div className="relative group w-full flex flex-col items-center">
-                  <a href={popupAds[0].link || '#'} target="_blank" rel="noreferrer" className="block w-full">
-                    <img 
-                      src={formatImageUrl(popupAds[0].imageUrl)} 
-                      alt="Anuncio Especial" 
-                      // object-contain evita que se corte. max-h limita la altura en vistas pequeñas para no desbordar.
-                      className="w-full h-auto max-h-[60vh] sm:max-h-[70vh] md:max-h-[85vh] object-contain mx-auto rounded-xl shadow-2xl"
-                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://placehold.co/800x600/e2e8f0/64748b?text=Imagen+No+Disponible'; }}
-                    />
+          {/* Caja del Pop-up - Ultra Responsive */}
+          <div className="relative z-10 w-full max-w-lg md:max-w-3xl lg:max-w-5xl flex flex-col items-center justify-center animate-popup-spring pointer-events-none">
+
+            {popupAds[0].imageUrl ? (
+              // DISEÑO CON IMAGEN
+              <div className="w-full flex flex-col items-center justify-center pointer-events-auto">
+                <a href={popupAds[0].link || '#'} target="_blank" rel="noreferrer" className="block relative w-full flex justify-center">
+                  <img 
+                    src={formatImageUrl(popupAds[0].imageUrl)} 
+                    alt="Anuncio Especial" 
+                    // El truco para responsiveness: respeta el ratio y nunca desborda la altura de la pantalla
+                    className="max-w-full max-h-[60vh] md:max-h-[75vh] w-auto h-auto object-contain rounded-xl md:rounded-2xl shadow-2xl"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://placehold.co/800x600/e2e8f0/64748b?text=Imagen+No+Disponible'; }}
+                  />
+                </a>
+                
+                {/* Título y botón debajo de la imagen (Solo se muestra si se llena en el panel) */}
+                {(popupAds[0].title || popupAds[0].btnText) && (
+                  <div className="w-[90%] md:w-auto md:min-w-[400px] p-5 md:p-6 mt-4 md:mt-6 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col items-center border border-white/40">
+                    {popupAds[0].title && <h3 className="text-xl md:text-2xl font-black text-slate-900 text-center mb-3 md:mb-4 uppercase tracking-tight">{popupAds[0].title}</h3>}
+                    {popupAds[0].btnText && (
+                      <a href={popupAds[0].link || '#'} target="_blank" rel="noreferrer" className="w-full md:w-auto px-8 py-3.5 md:py-4 rounded-xl font-black text-sm md:text-base shadow-[0_10px_20px_-10px_rgba(0,0,0,0.5)] hover:shadow-lg hover:-translate-y-1 transition-all uppercase tracking-widest text-center" style={{ backgroundColor: popupAds[0].btnColor || '#06b6d4', color: '#fff' }}>
+                        {popupAds[0].btnText}
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              // DISEÑO SIN IMAGEN (SOLO TEXTO Y COLORES)
+              <div className="relative w-full max-w-[90vw] md:max-w-2xl p-8 md:p-16 text-center flex flex-col items-center justify-center min-h-[350px] md:min-h-[450px] rounded-[2rem] shadow-2xl pointer-events-auto border border-white/10" style={{ backgroundColor: popupAds[0].bgColor || '#0f172a' }}>
+                <h3 className="text-3xl md:text-5xl font-black mb-8 uppercase tracking-tight leading-tight" style={{ color: popupAds[0].textColor || '#ffffff' }}>
+                  {popupAds[0].title}
+                </h3>
+                {popupAds[0].btnText && (
+                  <a href={popupAds[0].link || '#'} target="_blank" rel="noreferrer" className="w-full md:w-auto px-10 py-4 rounded-xl font-black shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:scale-105 transition-all uppercase tracking-widest text-base" style={{ backgroundColor: popupAds[0].btnColor || '#06b6d4', color: '#fff' }}>
+                    {popupAds[0].btnText}
                   </a>
-                  
-                  {/* Si llenaste el título o botón extra en el admin, se muestran abajo de la imagen sin estorbar */}
-                  {(popupAds[0].title || popupAds[0].btnText) && (
-                    <div className="w-full max-w-2xl p-4 mt-3 bg-white/95 backdrop-blur-md rounded-xl shadow-xl flex flex-col items-center border border-slate-200">
-                      {popupAds[0].title && <h3 className="text-lg md:text-xl font-black text-slate-900 text-center mb-3 uppercase tracking-tight">{popupAds[0].title}</h3>}
-                      {popupAds[0].btnText && (
-                        <a href={popupAds[0].link || '#'} target="_blank" rel="noreferrer" className="px-6 py-2.5 rounded-xl font-bold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all uppercase tracking-wide" style={{ backgroundColor: popupAds[0].btnColor || '#06b6d4', color: '#fff' }}>
-                          {popupAds[0].btnText}
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                // Si solo usaste los colores y texto del sistema (sin imagen)
-                <div className="w-full p-6 sm:p-8 md:p-12 text-center flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px] max-h-[80vh] overflow-auto rounded-2xl shadow-2xl" style={{ backgroundColor: popupAds[0].bgColor || '#0f172a' }}>
-                  <h3 className="text-2xl md:text-4xl font-black mb-6 md:mb-8 uppercase tracking-tight leading-tight" style={{ color: popupAds[0].textColor || '#ffffff' }}>
-                    {popupAds[0].title}
-                  </h3>
-                  {popupAds[0].btnText && (
-                    <a href={popupAds[0].link || '#'} target="_blank" rel="noreferrer" className="px-8 py-3.5 md:px-10 md:py-4 rounded-xl font-bold shadow-xl hover:scale-105 transition-transform uppercase tracking-wide text-sm md:text-base" style={{ backgroundColor: popupAds[0].btnColor || '#06b6d4', color: '#fff' }}>
-                      {popupAds[0].btnText}
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
