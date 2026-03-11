@@ -907,9 +907,14 @@ function HomePage() {
                   Organización y logística para empresas. Cursos con aval por <span className="font-bold text-cyan-300">INPSASEL</span>, foros y capacitaciones in-company a medida.
                 </p>
               </div>
-              <button className="mt-6 md:mt-0 bg-white hover:bg-cyan-50 text-blue-900 px-8 py-3 rounded font-black uppercase text-sm transition-colors shadow-md whitespace-nowrap flex items-center justify-center">
-                Contactar Ventas
-              </button>
+              <a 
+               href="https://wa.me/584221590023?text=Hola,%20me%20interesan%20los%20servicios%20corporativos%20y%20cursos%20INPSASEL" 
+               target="_blank" 
+               rel="noreferrer" 
+                className="mt-6 md:mt-0 bg-white hover:bg-cyan-50 text-blue-900 px-8 py-3 rounded font-black uppercase text-sm transition-colors shadow-md whitespace-nowrap flex items-center justify-center cursor-pointer"
+              >
+               Contactar Ventas
+              </a>
             </div>
           </div>
         </section>

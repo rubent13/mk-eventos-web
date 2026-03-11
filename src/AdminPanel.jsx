@@ -103,24 +103,36 @@ const getOccupancyBadge = (occupied, total) => {
   return <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-emerald-200">Disponible</span>;
 };
 
-// --- LOGO CORPORATIVO ---
-const MKLogo = ({ className = "w-10 h-10", light = false }) => (
-  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
-      <defs>
-        <linearGradient id={light ? "mkGradLight" : "mkGradDark"} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor={light ? "#ffffff" : "#0284c7"} />
-          <stop offset="100%" stopColor={light ? "#e2e8f0" : "#1e3a8a"} />
-        </linearGradient>
-      </defs>
-      <path d="M50 10 L90 50 L50 90 L10 50 Z" stroke={`url(#${light ? 'mkGradLight' : 'mkGradDark'})`} />
-      <path d="M50 10 L50 90" stroke={`url(#${light ? 'mkGradLight' : 'mkGradDark'})`} />
-      <path d="M10 50 L90 50" stroke={`url(#${light ? 'mkGradLight' : 'mkGradDark'})`} />
-      <path d="M28 28 L50 50 L72 28" stroke={`url(#${light ? 'mkGradLight' : 'mkGradDark'})`} />
-      <path d="M28 72 L50 50 L72 72" stroke={`url(#${light ? 'mkGradLight' : 'mkGradDark'})`} />
-    </g>
-  </svg>
+const LOGO_URL = "/Logo Sin fondo En blanco.png"; // Logo para el menú lateral de adentro
+const LOGIN_LOGO_URL = "/Logo sin fondo.png"; // <-- REEMPLAZA ESTO: Logo para la pantalla de inicio de sesión (ej. "/logo-login.png")
+
+
+// Componente del logo para el menú interno
+const MKLogo = ({ className = "w-10 h-10" }) => (
+  <img 
+    src={LOGO_URL} 
+    alt="Logo Admin" 
+    className={`${className} object-contain`} 
+    onError={(e) => {
+      e.target.onerror = null; 
+      e.target.src = 'https://placehold.co/400x400/e2e8f0/64748b?text=LOGO';
+    }}
+  />
 );
+
+// Componente del logo específicamente para la pantalla de Login
+const LoginLogo = ({ className = "w-10 h-10" }) => (
+  <img 
+    src={LOGIN_LOGO_URL} 
+    alt="Logo Login" 
+    className={`${className} object-contain`} 
+    onError={(e) => {
+      e.target.onerror = null; 
+      e.target.src = 'https://placehold.co/400x400/e2e8f0/64748b?text=LOGO';
+    }}
+  />
+);
+
 
 // --- DATOS (INICIAN VACÍOS PARA USAR LA BASE DE DATOS REAL) ---
 const INITIAL_EVENTS = [];
@@ -148,7 +160,7 @@ function LoginScreen({ onLogin }) {
     if (credentials.user === 'admin' && credentials.password === 'admin123') {
       onLogin();
     } else {
-      alert("Credenciales incorrectas (Usa: admin / admin123)");
+      alert("Credenciales incorrectas");
     }
   };
 
@@ -156,8 +168,8 @@ function LoginScreen({ onLogin }) {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-2xl border border-slate-100 w-full max-w-md p-10">
         <div className="flex flex-col items-center mb-8">
-          <MKLogo className="w-16 h-16 mb-4" />
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">MK Enterprise</h1>
+          <LoginLogo className="w-36 h-36" />
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">MK Admin</h1>
           <p className="text-slate-500 text-sm font-medium mt-1">Admin Portal Seguro</p>
         </div>
         <form onSubmit={handleLogin} className="space-y-5">
@@ -219,12 +231,12 @@ function DashboardLayout({ onLogout }) {
       {/* SIDEBAR CORPORATIVO */}
       <aside className="hidden md:flex flex-col w-64 bg-slate-900 text-slate-300 border-r border-slate-800 shrink-0">
         <div className="p-6 flex items-center gap-3">
-          <MKLogo className="w-8 h-8" light={true} />
+          <MKLogo className="w-14 h-14" light={true} />
           <div>
-            <h2 className="font-bold text-white text-base tracking-tight leading-tight">MK Enterprise</h2>
+            <h2 className="font-bold text-white text-base tracking-tight leading-tight">MK Admin</h2>
             <div className="flex items-center gap-1.5 mt-0.5">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">G-Sheets Sync</span>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Adrian Faria</span>
             </div>
           </div>
         </div>
@@ -355,10 +367,8 @@ function DashboardOverview() {
           </div>
         ))}
       </div>
-      <div className="bg-slate-900 rounded-xl p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4 border border-slate-800">
+      <div >
         <div>
-          <h3 className="text-lg font-bold flex items-center gap-2"><Settings size={20} className="text-blue-400"/> Integración con Google Drive & Sheets</h3>
-          <p className="text-slate-400 text-sm mt-1">El panel utiliza URLs de Drive directamente para mostrar imágenes y guarda los datos en <code className="bg-slate-800 px-1.5 py-0.5 rounded text-slate-300 break-all">{SCRIPT_URL}</code>.</p>
         </div>
       </div>
     </div>
