@@ -553,7 +553,7 @@ function EventManagement() {
                     <input name="totalSeats" type="number" defaultValue={editingItem?.totalSeats || 100} className="w-full px-4 py-2.5 border border-indigo-200 rounded-lg outline-none text-sm bg-white"/>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 flex items-center gap-1"><Users size={12}/> Entradas Vendidas</label>
+                    <label className="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 flex items-center gap-1"><Users size={12}/> Entradas Vendidas</label>
                     <input name="occupiedSeats" type="number" defaultValue={editingItem?.occupiedSeats || 0} className="w-full px-4 py-2.5 border border-indigo-500 rounded-lg outline-none text-sm bg-white font-bold text-indigo-900 ring-2 ring-indigo-200"/>
                   </div>
                 </div>
@@ -563,7 +563,7 @@ function EventManagement() {
                 <h4 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 mb-4">Multimedia y Ubicación</h4>
                 
                 <div className="bg-slate-50 border border-dashed border-slate-300 p-4 rounded-xl">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex justify-between">
+                  <label className="flex text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 justify-between">
                     <span>URL de la Imagen (Drive, Imgur, etc) *</span>
                   </label>
                   <input 
@@ -791,7 +791,7 @@ function CourseManagement() {
               <div><label className="block text-xs font-bold text-slate-700 uppercase mb-2">Nombre *</label><input name="title" defaultValue={editingItem?.title} required className="w-full p-2.5 border rounded-lg"/></div>
               
               <div className="bg-slate-50 border border-dashed border-slate-300 p-4 rounded-xl">
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-2 flex justify-between">
+                <label className="flex text-xs font-bold text-slate-700 uppercase mb-2 justify-between">
                   <span>URL de Imagen Portada *</span>
                 </label>
                 <input 
@@ -940,7 +940,7 @@ function CarouselManagement() {
             <input type="hidden" name="status" defaultValue={editingItem?.status || 'Activo'} />
             
             <div className="bg-slate-50 border border-dashed border-slate-300 p-4 rounded-xl">
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-2 flex justify-between">
+                <label className="text-xs font-bold text-slate-700 uppercase mb-2 flex justify-between">
                   <span>URL de la Imagen *</span>
                 </label>
                 <input 
@@ -1097,7 +1097,7 @@ function AdManagement() {
             </div>
             
             <div className="bg-slate-50 border border-dashed border-slate-300 p-4 rounded-xl">
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1 flex justify-between">
+                <label className="flex text-xs font-bold text-slate-700 uppercase mb-1 justify-between">
                   <span>URL de Imagen (Diseño propio)</span>
                 </label>
                 <input 

@@ -290,6 +290,18 @@ function HomePage() {
   const topAds = adsBD.filter(ad => ad.position === 'Cintillo Superior');
   const midAds = adsBD.filter(ad => ad.position === 'Banner Mitad de Página');
 
+  // --- NUEVA LÓGICA PARA EL POP-UP ---
+  const popupAds = adsBD.filter(ad => ad.position === 'Pop-up');
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    // Si hay algún pop-up activo en la base de datos, lo mostramos 2 segundos después de entrar
+    if (popupAds.length > 0) {
+      const timer = setTimeout(() => setShowPopup(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [popupAds.length]);
+
   useEffect(() => {
     if (slidesBD.length === 0) return;
     const timer = setInterval(() => {
@@ -1020,7 +1032,7 @@ function HomePage() {
           </div>
           
           <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-slate-500 text-center md:text-left">
-            <p>&copy; {new Date().getFullYear()} Medical Knowledge C.A. - RIF: J-XXXXXXXXX. Todos los derechos reservados.</p>
+            <p>&copy; {new Date().getFullYear()} MEDICAL KNOWLEDGE MK, C.A. - RIF: J-507646025. Todos los derechos reservados.</p>
             <div className="flex gap-4 justify-center md:justify-start">
               <button className="hover:text-white transition">Términos de Compra</button>
               <button className="hover:text-white transition">Privacidad</button>
@@ -1029,52 +1041,66 @@ function HomePage() {
         </div>
       </footer>
 
-      {/* --- MODAL DE INSCRIPCIÓN / CHECKOUT --- */}
+     {/* --- MODAL MEJORADO (MOBILE FRIENDLY) --- */}
       {selectedEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-4">
-          <div className="absolute inset-0 bg-slate-900/90 md:bg-slate-900/80 backdrop-blur-sm" onClick={() => setSelectedEvent(null)}></div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-6">
+          {/* Fondo oscuro */}
+          <div className="absolute inset-0 bg-slate-900/90 md:bg-slate-900/80 backdrop-blur-sm transition-opacity" onClick={() => setSelectedEvent(null)}></div>
           
-          <div className="bg-white md:rounded overflow-hidden shadow-2xl w-full h-full md:h-auto md:max-w-5xl relative z-10 flex flex-col md:flex-row max-h-[100vh] md:max-h-[95vh]">
-            {/* Botón Cerrar (Mobile y Desktop) */}
+          {/* Caja Principal del Modal */}
+          <div className="bg-white md:rounded-2xl shadow-2xl w-full h-full md:h-auto md:max-h-[90vh] md:max-w-5xl relative z-10 flex flex-col overflow-hidden animate-in fade-in duration-200">
+            
+            {/* Botón Cerrar Flotante */}
             <button 
               onClick={() => setSelectedEvent(null)}
-              className="absolute top-4 right-4 z-20 text-white md:text-slate-400 hover:text-white md:hover:text-slate-900 bg-black/30 md:bg-transparent rounded-full p-2 md:p-1 transition-colors backdrop-blur-md md:backdrop-blur-none flex items-center justify-center"
+              className="absolute bottom-3 right-4 md:bottom-4 md:right-4 z-50 bg-white/90 md:bg-slate-100/90 text-slate-900 hover:bg-slate-200 p-2 rounded-full backdrop-blur-md shadow-sm transition-colors border border-slate-200"
             >
-              <X size={24} />
+              <X size={20} />
             </button>
 
-            {/* Columna Izquierda: Resumen (Scroll independiente en móvil) */}
-            <div className="w-full md:w-1/2 bg-slate-50 p-6 md:p-8 border-b md:border-b-0 md:border-r border-slate-200 overflow-y-auto max-h-[35vh] md:max-h-none shrink-0 flex flex-col items-center md:items-start text-center md:text-left">
-              <div className="flex flex-col items-center md:items-start w-full">
-                <span className="bg-blue-900 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide mb-3 inline-block">
+            {/* Contenedor scrolleable unificado en celular, dividido en PC */}
+            <div className="flex flex-col md:flex-row w-full h-full overflow-y-auto md:overflow-hidden relative">
+              
+              {/* --- Columna Izquierda: Información --- */}
+              <div className="w-full md:w-1/2 bg-slate-50 p-6 md:p-8 border-b md:border-b-0 md:border-r border-slate-200 shrink-0 md:overflow-y-auto flex flex-col items-center md:items-start text-center md:text-left">
+                
+                <span className="bg-blue-900 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide mb-4 inline-block shadow-sm">
                   {selectedEvent.category || 'Evento'}
                 </span>
-                <img src={formatImageUrl(selectedEvent.image)} alt={selectedEvent.title} className="w-full h-32 md:h-64 object-cover rounded mb-4 shadow-sm" />
-                <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-2 leading-tight">{selectedEvent.title}</h3>
                 
-                <div className="space-y-1 md:space-y-2 text-xs md:text-sm text-slate-600 mt-3 md:mt-4 font-medium flex flex-col items-center md:items-start w-full">
+                <img 
+                  src={formatImageUrl(selectedEvent.image)} 
+                  alt={selectedEvent.title} 
+                  className="w-full h-40 md:h-64 object-cover rounded-xl mb-5 shadow-sm border border-slate-200" 
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://placehold.co/800x400/e2e8f0/64748b?text=Imagen+No+Disponible'; }}
+                />
+                
+                <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-3 leading-tight tracking-tight">
+                  {selectedEvent.title}
+                </h3>
+                
+                <div className="space-y-2 text-sm text-slate-600 font-medium mb-6 w-full flex flex-col items-center md:items-start">
                   <p className="flex items-center justify-center md:justify-start gap-2 w-full"><Calendar size={16} className="text-cyan-600 shrink-0"/> {selectedEvent.dateFull}</p>
                   <p className="flex items-center justify-center md:justify-start gap-2 w-full"><MapPin size={16} className="text-cyan-600 shrink-0"/> {selectedEvent.location}</p>
                 </div>
 
-                {/* Detalles extra ocultos en móvil para ahorrar espacio (solo visibles si se hace scroll) */}
                 {selectedEvent.description && (
-                  <p className="text-xs md:text-sm text-slate-600 mt-4 leading-relaxed border-t border-slate-200 pt-4 hidden sm:block w-full text-center md:text-left">
+                  <p className="text-sm text-slate-600 mb-6 leading-relaxed bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm w-full">
                     {selectedEvent.description}
                   </p>
                 )}
 
                 {(selectedEvent.totalSeats && selectedEvent.occupiedSeats) && (
-                  <div className="mt-4 md:mt-6 bg-white p-3 md:p-4 rounded border border-slate-200 shadow-sm w-full">
-                    <div className="flex justify-between text-[10px] md:text-xs font-bold uppercase mb-2">
-                      <span className="text-slate-500">Ocupación / Aforo</span>
-                      <span className={(selectedEvent.totalSeats - selectedEvent.occupiedSeats) < 20 ? 'text-red-500 animate-pulse' : 'text-green-500'}>
-                        {selectedEvent.totalSeats - selectedEvent.occupiedSeats} entradas
+                  <div className="mt-2 bg-white p-4 rounded-xl border border-slate-200 shadow-sm w-full">
+                    <div className="flex justify-between text-xs font-bold uppercase mb-2">
+                      <span className="text-slate-500">Disponibilidad</span>
+                      <span className={(selectedEvent.totalSeats - selectedEvent.occupiedSeats) < 20 ? 'text-red-500 animate-pulse' : 'text-emerald-600'}>
+                        {selectedEvent.totalSeats - selectedEvent.occupiedSeats} lugares
                       </span>
                     </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2 md:h-2.5 overflow-hidden">
+                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
                       <div 
-                        className="bg-cyan-500 h-full rounded-full transition-all duration-1000" 
+                        className={`h-full rounded-full transition-all duration-1000 ${((selectedEvent.occupiedSeats / selectedEvent.totalSeats) * 100) > 80 ? 'bg-amber-500' : 'bg-cyan-500'}`}
                         style={{ width: `${(selectedEvent.occupiedSeats / selectedEvent.totalSeats) * 100}%` }}
                       ></div>
                     </div>
@@ -1082,98 +1108,73 @@ function HomePage() {
                 )}
 
                 {selectedEvent.mapUrl && (
-                  <div className="mt-4 md:mt-6 hidden md:block w-full flex flex-col items-center md:items-start">
-                    <h4 className="font-bold text-slate-800 text-xs mb-2 uppercase tracking-wide flex items-center justify-center md:justify-start"><MapPin size={14} className="inline mr-1 text-cyan-600"/> Ubicación Exacta</h4>
-                    <div className="rounded overflow-hidden border border-slate-200 h-48 bg-slate-200 relative z-0 w-full flex items-center justify-center">
-                      <iframe 
-                        src={selectedEvent.mapUrl} 
-                        width="100%" 
-                        height="100%" 
-                        style={{border:0}} 
-                        allowFullScreen="" 
-                        loading="lazy" 
-                        referrerPolicy="no-referrer-when-downgrade"
-                      ></iframe>
+                  <div className="mt-6 w-full flex flex-col items-center md:items-start">
+                    <h4 className="font-bold text-slate-800 text-xs mb-3 uppercase tracking-wide flex items-center justify-center md:justify-start">
+                      <MapPin size={14} className="inline mr-1 text-cyan-600"/> Ubicación Exacta
+                    </h4>
+                    <div className="rounded-xl overflow-hidden border border-slate-200 h-48 bg-slate-200 relative z-0 w-full flex items-center justify-center shadow-sm">
+                      <iframe src={selectedEvent.mapUrl} width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="mt-4 md:mt-8 pt-4 border-t border-slate-200 w-full">
-                <div className="flex justify-between items-end">
-                  <span className="text-slate-500 font-bold text-xs md:text-sm uppercase">Costo</span>
-                  <span className="text-2xl md:text-3xl font-black text-blue-900">{selectedEvent.price}</span>
+              {/* --- Columna Derecha: Formulario --- */}
+              <div className="w-full md:w-1/2 p-6 md:p-8 bg-white md:overflow-y-auto flex flex-col items-center md:items-stretch text-center md:text-left relative">
+                
+                <div className="mb-6 pb-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center md:items-end gap-4 w-full">
+                  <div className="flex flex-col items-center md:items-start">
+                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">Inscripción</h2>
+                    <p className="text-slate-500 text-sm mt-1">Completa los datos del titular de la entrada.</p>
+                  </div>
+                  <div className="text-center md:text-right bg-slate-50 md:bg-transparent p-3 md:p-0 rounded-lg w-full md:w-auto">
+                    <span className="block text-[10px] md:text-xs uppercase font-bold text-slate-400 tracking-wider">Total a pagar</span>
+                    <span className="text-3xl font-black text-blue-900">{selectedEvent.price}</span>
+                  </div>
                 </div>
+
+                <form onSubmit={handleRegisterSubmit} className="space-y-4 w-full flex-1 flex flex-col items-center md:items-start">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                    <div className="flex flex-col items-start w-full">
+                      <label className="block text-[11px] font-bold text-slate-700 uppercase mb-1 tracking-wider">Nombre</label>
+                      <input type="text" name="nombre" required value={formData.nombre} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition-all font-medium" />
+                    </div>
+                    <div className="flex flex-col items-start w-full">
+                      <label className="block text-[11px] font-bold text-slate-700 uppercase mb-1 tracking-wider">Apellido</label>
+                      <input type="text" name="apellido" required value={formData.apellido} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition-all font-medium" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-start w-full">
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase mb-1 tracking-wider">Profesión / Ocupación</label>
+                    <input type="text" name="profesion" required value={formData.profesion} onChange={handleInputChange} placeholder="Ej. Médico General, Estudiante..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition-all font-medium placeholder:text-slate-400 placeholder:font-normal" />
+                  </div>
+
+                  <div className="flex flex-col items-start w-full">
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase mb-1 tracking-wider">Correo Electrónico</label>
+                    <input type="email" name="correo" required value={formData.correo} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition-all font-medium" />
+                  </div>
+
+                  <div className="flex flex-col items-start w-full mb-4">
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase mb-1 tracking-wider">Teléfono (WhatsApp)</label>
+                    <input type="tel" name="telefono" required value={formData.telefono} onChange={handleInputChange} placeholder="+58 412 0000000" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition-all font-medium placeholder:text-slate-400 placeholder:font-normal" />
+                  </div>
+
+                  <div className="pt-2 w-full mt-auto flex flex-col items-center md:items-start">
+                    <button type="submit" className="w-full bg-[#25D366] hover:bg-[#1da851] text-white py-3.5 rounded-xl font-black uppercase tracking-wide text-sm shadow-[0_4px_14px_rgba(37,211,102,0.3)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.4)] transition-all hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                      Pagar por WhatsApp
+                    </button>
+                    <p className="text-center md:text-left text-[11px] text-slate-500 mt-4 font-medium w-full max-w-sm mx-auto md:mx-0">
+                      Al continuar, aceptas nuestros términos de compra. Serás redirigido a atención al cliente.
+                    </p>
+                  </div>
+                </form>
               </div>
-            </div>
-
-            {/* Columna Derecha: Formulario (Scroll independiente) */}
-            <div className="w-full md:w-1/2 p-6 md:p-8 overflow-y-auto bg-white flex-1 flex flex-col items-center md:items-start text-center md:text-left">
-              <h2 className="text-xl md:text-2xl font-black text-slate-900 mb-1">Datos del Titular</h2>
-              <p className="text-slate-500 text-xs md:text-sm mb-6">Completa tus datos para emitir tu entrada o certificado.</p>
-
-              <form onSubmit={handleRegisterSubmit} className="space-y-4 w-full flex flex-col items-center md:items-start">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                  <div className="flex flex-col items-center md:items-start w-full">
-                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1 text-center md:text-left">Nombre</label>
-                    <input 
-                      type="text" name="nombre" required value={formData.nombre} onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
-                    />
-                  </div>
-                  <div className="flex flex-col items-center md:items-start w-full">
-                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1 text-center md:text-left">Apellido</label>
-                    <input 
-                      type="text" name="apellido" required value={formData.apellido} onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center md:items-start w-full">
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1 text-center md:text-left">Profesión / Ocupación</label>
-                  <input 
-                    type="text" name="profesion" required value={formData.profesion} onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
-                    placeholder="Ej. Médico General, Estudiante..."
-                  />
-                </div>
-
-                <div className="flex flex-col items-center md:items-start w-full">
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1 text-center md:text-left">Correo Electrónico</label>
-                  <input 
-                    type="email" name="correo" required value={formData.correo} onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
-                  />
-                </div>
-
-                <div className="flex flex-col items-center md:items-start w-full">
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1 text-center md:text-left">Teléfono (WhatsApp)</label>
-                  <input 
-                    type="tel" name="telefono" required value={formData.telefono} onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
-                    placeholder="+58 422 1590023"
-                  />
-                </div>
-
-                <div className="pt-4 w-full flex flex-col items-center md:items-start">
-                  <button 
-                    type="submit" 
-                    className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-3 rounded font-black uppercase text-sm shadow-md transition-colors flex justify-center items-center gap-2"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                    Continuar Pago por WhatsApp
-                  </button>
-                  <p className="text-center md:text-left text-[10px] text-slate-400 mt-3 font-medium w-full">
-                    Al continuar, aceptas nuestros términos de compra. Serás redirigido a atención al cliente para los métodos de pago.
-                  </p>
-                </div>
-              </form>
             </div>
           </div>
         </div>
       )}
-
       {/* --- MODAL MÉTODOS DE PAGO --- */}
       {showPaymentModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -1203,6 +1204,67 @@ function HomePage() {
               <a href="https://wa.me/584221590023?text=Hola,%20deseo%20pagar%20con%20Transferencia%20Bancaria" target="_blank" rel="noreferrer" className="flex items-center justify-center md:justify-start gap-4 p-4 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-900 font-bold transition-all hover:scale-105">
                 <Landmark size={24} /> Transferencia Bancaria
               </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- MODAL POP-UP PUBLICITARIO --- */}
+      {showPopup && popupAds.length > 0 && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-8">
+          {/* Fondo oscuro desenfocado */}
+          <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity" onClick={() => setShowPopup(false)}></div>
+          
+          {/* Caja del Pop-up - Ahora se adapta al contenido dinámicamente */}
+          <div className="relative z-10 w-full max-w-[95vw] md:max-w-2xl lg:max-w-4xl animate-in zoom-in-95 duration-300 flex flex-col items-center justify-center">
+
+            {/* Botón Cerrar Flotante (Por fuera para que no tape el diseño) */}
+            <button 
+              onClick={() => setShowPopup(false)}
+              className="absolute -top-4 -right-2 md:-top-5 md:-right-5 z-20 bg-slate-800 hover:bg-slate-700 text-white p-2 md:p-3 rounded-full shadow-xl border-2 border-slate-600 transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="w-full flex flex-col items-center">
+              {popupAds[0].imageUrl ? (
+                // Si subiste una imagen/diseño propio
+                <div className="relative group w-full flex flex-col items-center">
+                  <a href={popupAds[0].link || '#'} target="_blank" rel="noreferrer" className="block w-full">
+                    <img 
+                      src={formatImageUrl(popupAds[0].imageUrl)} 
+                      alt="Anuncio Especial" 
+                      // object-contain evita que se corte. max-h-[80vh] previene desbordamiento vertical.
+                      className="w-full h-auto max-h-[75vh] md:max-h-[85vh] object-contain mx-auto rounded-xl shadow-2xl"
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://placehold.co/800x600/e2e8f0/64748b?text=Imagen+No+Disponible'; }}
+                    />
+                  </a>
+                  
+                  {/* Si llenaste el título o botón extra en el admin, se muestran abajo de la imagen sin estorbar */}
+                  {(popupAds[0].title || popupAds[0].btnText) && (
+                    <div className="w-full max-w-2xl p-4 mt-3 bg-white/95 backdrop-blur-md rounded-xl shadow-xl flex flex-col items-center border border-slate-200">
+                      {popupAds[0].title && <h3 className="text-lg md:text-xl font-black text-slate-900 text-center mb-3 uppercase tracking-tight">{popupAds[0].title}</h3>}
+                      {popupAds[0].btnText && (
+                        <a href={popupAds[0].link || '#'} target="_blank" rel="noreferrer" className="px-6 py-2.5 rounded-xl font-bold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all uppercase tracking-wide" style={{ backgroundColor: popupAds[0].btnColor || '#06b6d4', color: '#fff' }}>
+                          {popupAds[0].btnText}
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Si solo usaste los colores y texto del sistema (sin imagen)
+                <div className="w-full p-8 md:p-12 text-center flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px] rounded-2xl shadow-2xl" style={{ backgroundColor: popupAds[0].bgColor || '#0f172a' }}>
+                  <h3 className="text-2xl md:text-4xl font-black mb-6 md:mb-8 uppercase tracking-tight leading-tight" style={{ color: popupAds[0].textColor || '#ffffff' }}>
+                    {popupAds[0].title}
+                  </h3>
+                  {popupAds[0].btnText && (
+                    <a href={popupAds[0].link || '#'} target="_blank" rel="noreferrer" className="px-8 py-3.5 md:px-10 md:py-4 rounded-xl font-bold shadow-xl hover:scale-105 transition-transform uppercase tracking-wide text-sm md:text-base" style={{ backgroundColor: popupAds[0].btnColor || '#06b6d4', color: '#fff' }}>
+                      {popupAds[0].btnText}
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
