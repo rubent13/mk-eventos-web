@@ -157,7 +157,7 @@ function LoginScreen({ onLogin }) {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (credentials.user === 'admin' && credentials.password === 'admin123') {
+    if (credentials.user === 'admin' && credentials.password === '31766503') {
       onLogin();
     } else {
       alert("Credenciales incorrectas");
