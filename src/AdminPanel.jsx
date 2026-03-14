@@ -1134,7 +1134,7 @@ function AdManagement() {
 
             <div><label className="text-xs font-bold uppercase mb-1 block">Título</label><input name="title" defaultValue={editingItem?.title} required className="w-full border p-2 rounded"/></div>
             <div className="grid grid-cols-2 gap-4">
-              <div><label className="text-xs font-bold uppercase mb-1 block">Texto Botón</label><input name="btnText" defaultValue={editingItem?.btnText} required className="w-full border p-2 rounded"/></div>
+              <div><label className="text-xs font-bold uppercase mb-1 block">Texto Botón (Opcional)</label><input name="btnText" defaultValue={editingItem?.btnText} className="w-full border p-2 rounded" placeholder="Deja vacío para ocultar botón"/></div>
               <div><label className="text-xs font-bold uppercase mb-1 block">URL Destino</label><input name="link" defaultValue={editingItem?.link || '#'} type="text" className="w-full border p-2 rounded"/></div>
             </div>
             

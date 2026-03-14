@@ -733,58 +733,80 @@ function HomePage() {
           </div>
         </section>
 
-        {/* --- PUBLICIDAD MEDIA CARRUSEL (Dinámico) --- */}
+        {/* --- PUBLICIDAD MEDIA CARRUSEL (Dinámico y Responsivo con Truco de Imagen Fantasma) --- */}
         {midAds.length > 0 && (
           <section className="py-10 bg-[#0f172a]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative h-32 md:h-48 overflow-hidden rounded shadow-2xl border border-slate-700 bg-slate-900 group flex items-center justify-center">
-              <div className="absolute top-0 right-0 bg-yellow-400 text-slate-900 text-[10px] font-black uppercase px-3 py-1 z-20">
-                Anuncio Patrocinado
-              </div>
-              
-              {midAds.map((ad, idx) => (
-                <a key={ad.id || idx} href={ad.link || '#'} target="_blank" rel="noreferrer"
-                   className={`absolute inset-0 flex items-center justify-center transition-opacity duration-1000 ease-in-out ${idx === activeAdSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
-                   style={{backgroundColor: ad.bgColor || '#0f172a'}}>
-                   
-                   {/* Imagen de fondo (sin capa oscura) centrada */}
-                   {ad.imageUrl && (
-                      <img 
-                        src={formatImageUrl(ad.imageUrl)} 
-                        alt="Ad" 
-                        className="w-full h-full object-cover transition-transform duration-[10000ms] group-hover:scale-105 opacity-100"
-                      />
-                   )}
-                   
-                   {/* Capa de texto opcional sobre el fondo/imagen */}
-                   {(ad.title || ad.btnText) && (
-                     <div className="absolute inset-0 flex items-center justify-start p-8 md:p-12">
-                       <div className="flex flex-col items-center text-center transform transition-transform group-hover:translate-x-2 duration-500 pt-20">
-                         {ad.title && (
-                           <h3 className="text-2xl md:text-3xl font-black max-w-lg tracking-tight uppercase" style={{color: ad.textColor || '#ffffff', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
-                             {ad.title}
-                           </h3>
-                         )}
-                         {ad.btnText && (
-                           <span className="px-5 py-2.5 text-sm font-bold rounded shadow-lg transition-transform hover:scale-105 uppercase tracking-wide mt-15 flex items-center justify-center" style={{backgroundColor: ad.btnColor || '#06b6d4', color: '#ffffff'}}>
-                             {ad.btnText}
-                           </span>
-                         )}
-                       </div>
-                     </div>
-                   )}
-                </a>
-              ))}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {/* Contenedor sin altura fija. Su altura dependerá de la imagen fantasma interna */}
+              <div className="relative w-full overflow-hidden rounded-xl md:rounded-2xl shadow-2xl border border-slate-700 bg-slate-900 group">
+               
 
-              {/* Controles de Publicidad (Si hay más de 1 anuncio) */}
-              {midAds.length > 1 && (
-                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
-                   {midAds.map((_, idx) => (
-                     <button key={idx} onClick={() => setActiveAdSlide(idx)}
-                       className={`h-1.5 rounded-full transition-all duration-500 ${activeAdSlide === idx ? 'w-6 bg-white' : 'w-2 bg-white/40'}`} 
-                     />
-                   ))}
-                 </div>
-              )}
+                {/* TRUCO PROFESIONAL: Imagen fantasma invisible que le dice a la caja qué tamaño tener */}
+                {midAds[0]?.imageUrl ? (
+                  <img 
+                    src={formatImageUrl(midAds[0].imageUrl)} 
+                    alt="placeholder" 
+                    className="w-full h-auto invisible pointer-events-none block" 
+                  />
+                ) : (
+                  <div className="w-full h-32 md:h-64 invisible block"></div>
+                )}
+                
+                {/* Los verdaderos anuncios que se montan encima del contenedor */}
+                {midAds.map((ad, idx) => (
+                  <a key={ad.id || idx} href={ad.link || '#'} target="_blank" rel="noreferrer"
+                     className={`absolute inset-0 flex items-center justify-center transition-opacity duration-1000 ease-in-out ${idx === activeAdSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
+                     style={{backgroundColor: ad.bgColor || '#0f172a'}}>
+                     
+                     {/* Al ser object-cover y tener el contenedor la misma proporción, calza 100% perfecto */}
+                     {ad.imageUrl && (
+                        <img 
+                          src={formatImageUrl(ad.imageUrl)} 
+                          alt="Ad" 
+                          className="w-full h-full object-cover transition-transform duration-[10000ms] group-hover:scale-105 opacity-100"
+                        />
+                     )}
+                     
+                     {/* Capa de texto opcional */}
+                     {(ad.title || ad.btnText) && (
+                       // AQUÍ CONTROLAS LA POSICIÓN GENERAL:
+                       // justify-start (Izquierda), justify-end (Derecha), justify-center (Centro)
+                       // items-end (Abajo), items-start (Arriba), items-center (Centro)
+                       <div className="absolute inset-0 flex items-end justify-start pb-0 md:pb-12">
+                         
+                         {/* Se quitó el fondo translúcido y el borde para dejar solo el botón limpio */}
+                         <div className="flex flex-col items-center text-center pointer-events-auto">
+                           {ad.title && (
+                             <h3 className="text-lg md:text-3xl font-black max-w-lg tracking-tight uppercase drop-shadow-md mb-3" style={{color: ad.textColor || '#ffffff'}}>
+                               {ad.title}
+                             </h3>
+                           )}
+                           {ad.btnText && (
+                             <span className="px-8 py-1 text-xs md:text-sm font-black rounded-lg shadow-xl transition-transform hover:scale-105 uppercase tracking-wider flex items-center justify-center cursor-pointer" style={{backgroundColor: ad.btnColor || '#06b6d4', color: '#ffffff'}}>
+                               {ad.btnText}
+                             </span>
+                           )}
+                         </div>
+
+                       </div>
+                     )}
+                  </a>
+                ))}
+
+                {/* Controles de Publicidad (Los puntitos blancos) */}
+                {midAds.length > 1 && (
+                   // AQUÍ CONTROLAS LA POSICIÓN DE LOS PUNTITOS:
+                   // bottom-4 right-6 (Esquina inferior derecha)
+                   // O si los quieres en el centro como antes: bottom-4 left-1/2 transform -translate-x-1/2
+                   <div className="absolute bottom-4 right-6 flex gap-2 z-20 bg-black/30 px-3 py-1.5 rounded-full backdrop-blur-md">
+                     {midAds.map((_, idx) => (
+                       <button key={idx} onClick={() => setActiveAdSlide(idx)}
+                         className={`h-1.5 md:h-2 rounded-full transition-all duration-500 ${activeAdSlide === idx ? 'w-6 md:w-8 bg-white' : 'w-2 md:w-3 bg-white/40 hover:bg-white/80'}`} 
+                       />
+                     ))}
+                   </div>
+                )}
+              </div>
             </div>
           </section>
         )}
